@@ -14,3 +14,4 @@ video/*
 *.wav
 *.ogv
 *.mp4
+ampache/
