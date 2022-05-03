@@ -1,6 +1,16 @@
-
+docker/log/ampache.log
 art/*
 music/*
 podcast/*
 upload/*
 video/*
+*.jpg
+*.ogg
+*.png
+*.flac
+*.mp3
+*.wma
+*.m4a
+*.wav
+*.ogv
+*.mp4
