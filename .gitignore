@@ -15,3 +15,5 @@ video/*
 *.ogv
 *.mp4
 ampache/
+docker/media
+nohup.out

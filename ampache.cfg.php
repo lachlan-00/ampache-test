@@ -557,7 +557,7 @@ licensing = "false"
 ; e.g. "Megadeth.jpg", "Judas Priest.png", "The Smashing Pumpkins.jpg"
 ; When enabled; gather_folder will check this folder for artist images
 ; DEFAULT: "false"
-artist_art_folder = "/mnt/art"
+artist_art_folder = "/media/art"
 
 ; Album Art Store on Disk
 ; This defines if arts should be stored on disk instead of database.
