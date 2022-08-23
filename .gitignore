@@ -1,4 +1,4 @@
-docker/log/ampache.log
+docker/log/ampache*.log
 art/*
 music/*
 podcast/*
