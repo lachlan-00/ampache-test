@@ -6,7 +6,7 @@
 ; This value is used to detect if this config file is up to date
 ; this is compared against a constant called CONFIG_VERSION
 ; that is located in src/Config/Init/InitializationHandlerConfig.php
-config_version = 61
+config_version = 62
 
 ;#########################################################
 ; Auto Update                                            #
@@ -74,7 +74,7 @@ database_hostname = "/run/mysqld/mysqld.sock"
 
 ; Port to use when connecting to your database
 ; DEFAULT: none
-;database_port = "3306"
+;database_port = 3306
 
 ; Name of your Ampache database
 ; DEFAULT: none
@@ -118,35 +118,35 @@ secret_key = "0ef4b88d1f6e6d131bcd20297ab23032547c845f435178ac5d609a3e594377"
 ; Length that a session will last expressed in seconds. Default is
 ; one hour.
 ; DEFAULT: 3600
-session_length = 3600
+session_length = "3600"
 
 ; Length that the session for a single streaming instance will last
 ; the default is two hours. With some clients, and long songs this can
 ; cause playback to stop, increase this value if you experience that
 ; DEFAULT: 7200
-stream_length = 7200
+stream_length = "7200"
 
 ; This length defines how long a 'remember me' session and cookie will
 ; last, the default is 86400, same as length. It is up to the administrator
 ; of the box to increase this, for reference 86400 = 1 day,
 ; 604800 = 1 week, and 2419200 = 1 month
 ; DEFAULT: 604800
-remember_length = 604800
+remember_length = "604800"
 
 ; Name of the Session/Cookie that will sent to the browser
 ; default should be fine
 ; DEFAULT: ampache
-session_name = ampachetest
+session_name = "ampachetest"
 
 ; Lifetime of the Cookie, 0 == Forever (until browser close) , otherwise in terms of seconds
 ; If you want cookies to last past a browser close set this to a value in seconds.
 ; DEFAULT: 0
-session_cookielife = 0
+session_cookielife = "0"
 
 ; Is the cookie a "secure" cookie? This should only be set to 1 (true) if you are
 ; running a secure site (HTTPS).
 ; DEFAULT: 0
-session_cookiesecure = 0
+session_cookiesecure = "0"
 
 ; Auth Methods
 ; This defines which auth methods Auth will attempt to use and in which order.
@@ -261,7 +261,7 @@ deferred_ext_metadata = "true"
 ; This list specifies possible delimiters additional to \0
 ; This setting takes a regex pattern. TODO: explain that this is not just for genres until we can replace this safely
 ; DEFAULT: // / \ | , ;
-additional_genre_delimiters = "[/]{2}|[/\\\\|,;]"
+additional_genre_delimiters = "[/]{2}|[/\\|,;]"
 
 ; Enable importing custom metadata from files.
 ; This will need a bit of time during the import. So you may want to disable this
@@ -391,6 +391,13 @@ catalog_prefix_pattern = "The|An|A|Die|Das|Ein|Eine|Les|Le|La"
 ; DEFAULT: Ampache - Zip Batch Download
 ;file_zip_comment = "Ampache - Zip Batch Download"
 
+; Load the debug webplayer
+; This will load the *.js player instead of the *.min.js player
+; The unminified player has a lot of console.log() statements in the code.
+; You can make changes and then check how the player is functioning.
+; DEFAULT: "false"
+;webplayer_debug = "true"
+
 ; Waveform
 ; This settings tells Ampache to attempt to generate a waveform
 ; for each song. It requires transcode and encode_args_wav settings.
@@ -504,7 +511,7 @@ sociable = "true"
 ; License
 ; This turns on / off all licensing features on Ampache
 ; DEFAULT: "false"
-licensing = "false"
+licensing = "true"
 
 ; This options will turn on/off Demo Mode
 ; If Demo mode is on you can not play songs or update your catalog
@@ -557,7 +564,7 @@ licensing = "false"
 ; e.g. "Megadeth.jpg", "Judas Priest.png", "The Smashing Pumpkins.jpg"
 ; When enabled; gather_folder will check this folder for artist images
 ; DEFAULT: "false"
-artist_art_folder = "/media/art"
+artist_art_folder = "/mnt/art"
 
 ; Album Art Store on Disk
 ; This defines if arts should be stored on disk instead of database.
@@ -724,7 +731,7 @@ wanted_types = "album,official"
 ; Labels
 ; Use labels to browse artists per label membership.
 ; DEFAULT: "false"
-;label = "true"
+label = "true"
 
 ; Broadcasts
 ; Allow users to broadcast music.
@@ -816,7 +823,7 @@ show_footer_statistics = "true"
 ; Debug
 ; If this is enabled Ampache will write debugging information to the log file
 ; DEFAULT: "false"
-;debug = "true"
+debug = "true"
 
 ; Debug Level
 ; This should always be set in conjunction with the
@@ -828,7 +835,7 @@ show_footer_statistics = "true"
 ; 4 == General Information
 ; 5 == Full Information (cataloging progress etc.)
 ; DEFAULT: 5
-debug_level = 5
+debug_level = "5"
 
 ; Path to Log File
 ; This defines where you want Ampache to log events to
@@ -843,7 +850,7 @@ log_path = "/var/log/ampache"
 ; This defines where the log file name pattern
 ; %name.%Y%m%d.log will create a different log file every day.
 ; DEFAULT: %name.%Y%m%d.log
-log_filename = "%name.%Y%m%d.log"
+log_filename = "ampache-test.log"
 
 ;#########################################################
 ; Encoding Settings                                      #
