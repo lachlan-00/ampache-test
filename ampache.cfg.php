@@ -556,7 +556,7 @@ licensing = "true"
 ; e.g. /mnt/music/Artist/Album/artist.jpg
 ;      /mnt/music/Artist/artist.jpg
 ; DEFAULT: folder.jpg
-;artist_art_preferred_filename = "folder.jpg"
+artist_art_preferred_filename = "artist.jpg"
 
 ; Artist Art Dump Folder
 ; Specify a local folder to search for art using name/title to identify
