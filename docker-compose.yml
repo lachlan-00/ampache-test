@@ -4,7 +4,7 @@ services:
   ampachetest:
     build:
       context: .
-      dockerfile: docker/Dockerfilephp74
+      dockerfile: docker/Dockerfilephp81
     restart: on-failure
     ports:
       - "8989:80"

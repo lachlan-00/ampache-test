@@ -37,6 +37,7 @@ RUN     apt-get -q -q update \
           libtheora-dev \
           libvorbis-dev \
           libvpx-dev \
+          locales \
           logrotate \
           make \
           mariadb-client \
