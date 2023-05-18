@@ -10,13 +10,13 @@ if [ ! -f $COMPOSERPATH ]; then
 fi
 
 if [ ! -d $AMPACHEDIR/ampache ]; then
-  git clone -b master https://github.com/ampache/ampache.git ampache
+  git clone -b patch6 https://github.com/ampache/ampache.git ampache
 fi
 if [ ! -f $AMPACHEDIR/ampache/index.php ]; then
   rm -rf $AMPACHEDIR/ampache
-  git clone -b master https://github.com/ampache/ampache.git ampache
+  git clone -b patch6 https://github.com/ampache/ampache.git ampache
 fi
-cd $AMPACHEDIR/ampache && git reset --hard origin/master && git pull
+cd $AMPACHEDIR/ampache && git reset --hard origin/patch6 && git pull
 rm -rf ./composer.lock vendor/* public/lib/components/* && php7.4 $COMPOSERPATH install
 php7.4 $COMPOSERPATH install
 find . -xtype l -exec rm {} \;
@@ -25,9 +25,6 @@ wget -P ./public/lib/components/jQuery-contextMenu/dist/ https://raw.githubuserc
 find . -name "*.map.1" -exec rm {} \;
 
 # create the htaccess files
-if [ ! -f $AMPACHEDIR/ampache/public/channel/.htaccess ]; then
-  cp $AMPACHEDIR/ampache/public/channel/.htaccess.dist $AMPACHEDIR/ampache/public/channel/.htaccess
-fi
 if [ ! -f $AMPACHEDIR/ampache/public/play/.htaccess ]; then
   cp $AMPACHEDIR/ampache/public/play/.htaccess.dist $AMPACHEDIR/ampache/public/play/.htaccess
 fi

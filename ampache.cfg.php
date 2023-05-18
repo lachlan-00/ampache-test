@@ -993,7 +993,7 @@ site_charset = "UTF-8"
 ; sign up for an account on your server.
 ; REMEMBER: don't forget to set the mail from address further down in the config.
 ; DEFAULT: "false"
-allow_public_registration = "false"
+allow_public_registration = "true"
 
 ; Require Captcha Text on Image confirmation
 ; Turning this on requires the user to correctly
@@ -1011,14 +1011,14 @@ allow_public_registration = "false"
 ; If this is on, an administrator will need to manually enable the account
 ; before it's usable.
 ; DEFAULT: "false"
-;admin_enable_required = "true"
+admin_enable_required = "true"
 
 ; This setting will allow all registrants/ldap/http users
 ; to be auto-approved as a user. By default, they will be
 ; added as a guest and must be promoted by the admin.
 ; POSSIBLE VALUES: guest, user, admin
 ; DEFAULT: guest
-;auto_user = "guest"
+auto_user = "user"
 
 ; This will display the user agreement when registering
 ; For agreement text, edit config/registration_agreement.php
