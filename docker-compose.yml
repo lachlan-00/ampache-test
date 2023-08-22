@@ -14,3 +14,4 @@ services:
       - ./ampache:/var/www/html
       - ./docker/log:/var/log/ampache
       - ./docker/media:/media
+      - ./docker/data/sql:/tmp/sql

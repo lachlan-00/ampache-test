@@ -17,8 +17,8 @@ if [ ! -f $AMPACHEDIR/ampache/index.php ]; then
   git clone -b patch6 https://github.com/ampache/ampache.git ampache
 fi
 cd $AMPACHEDIR/ampache && git reset --hard origin/patch6 && git pull
-rm -rf ./composer.lock vendor/* public/lib/components/* && php7.4 $COMPOSERPATH install
-php7.4 $COMPOSERPATH install
+rm -rf ./composer.lock vendor/* public/lib/components/* && php8.2 $COMPOSERPATH install
+php8.2 $COMPOSERPATH install
 find . -xtype l -exec rm {} \;
 wget -P ./public/lib/components/jQuery-contextMenu/dist/ https://raw.githubusercontent.com/swisnl/jQuery-contextMenu/a7a1b9f3b9cd789d6eb733ee5e7cbc6c91b3f0f8/dist/jquery.contextMenu.min.js.map
 wget -P ./public/lib/components/jQuery-contextMenu/dist/ https://raw.githubusercontent.com/swisnl/jQuery-contextMenu/a7a1b9f3b9cd789d6eb733ee5e7cbc6c91b3f0f8/dist/jquery.contextMenu.min.css.map
@@ -78,7 +78,7 @@ chmod -R 775 $AMPACHEDIR/ampache/public/
 if [ -f $AMPACHEDIR/ampache/composer.lock ]; then
   rm $AMPACHEDIR/ampache/composer.lock
 fi
-cd $AMPACHEDIR/ampache && php7.4 $COMPOSERPATH install && cd $AMPACHEDIR
+cd $AMPACHEDIR/ampache && php8.2 $COMPOSERPATH install && cd $AMPACHEDIR
 
 
 chown $UID:33 $AMPACHEDIR/docker/log
