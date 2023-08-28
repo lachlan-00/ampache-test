@@ -61,12 +61,14 @@ RUN     sh -c 'echo "Types: deb\n# http://snapshot.debian.org/archive/debian/202
     &&  chmod -R 775 /var/www \
     &&  ln -s /etc/apache2/sites-available/001-ampache.conf /etc/apache2/sites-enabled/ \
     &&  a2enmod rewrite \
+    &&  rm -rf /var/cache/* /tmp/* /var/tmp/* /root/.cache /var/www/docs /var/www/.tx \
     &&  sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
     &&  locale-gen \
     &&  apt-get -qq purge \
           libdvd-pkg \
           lsb-release \
           software-properties-common \
+          git \
           unzip \
     &&  apt-get -qq autoremove \
     &&  pecl install xdebug \
@@ -79,10 +81,13 @@ RUN     sh -c 'echo "Types: deb\n# http://snapshot.debian.org/archive/debian/202
 VOLUME ["/var/log/ampache", "/var/www/html"]
 EXPOSE 80
 
-COPY docker/data/bin/apache2.sh docker/data/bin/run.sh docker/data/bin/composer.sh /usr/local/bin/
+COPY docker/data/bin/run.sh docker/data/bin/inotifywait.sh docker/data/bin/cron.sh docker/data/bin/apache2.sh docker/data/bin/ampache_cron.sh docker/data/bin/docker-entrypoint.sh /usr/local/bin/
 COPY docker/data/sites-enabled/001-ampache.conf /etc/apache2/sites-available/
-COPY docker/data/conf.d/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/data/apache2/php.ini /etc/php/8.2/apache2/
+COPY docker/data/logrotate.d/* /etc/logrotate.d/
+COPY docker/data/supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 RUN  chmod +x /usr/local/bin/*.sh
 
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["run.sh"]
