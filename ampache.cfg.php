@@ -6,7 +6,14 @@
 ; This value is used to detect if this config file is up to date
 ; this is compared against a constant called CONFIG_VERSION
 ; that is located in src/Config/Init/InitializationHandlerConfig.php
-config_version = 62
+config_version = 71
+
+; Defines the default timezone used by the date functions
+; Uses the same strings as the default date.timezone (https://php.net/date.timezone)
+; If not set fallback to date_default_timezone_get() (https://www.php.net/manual/en/function.date-default-timezone-get.php)
+; EXAMPLE VALUES: "UTC", "Europe/London", "America/Los_Angeles" (https://www.php.net/manual/en/timezones.php)
+; DEFAULT: "UTC"
+;date_timezone = "UTC"
 
 ;#########################################################
 ; Auto Update                                            #
@@ -14,7 +21,7 @@ config_version = 62
 
 ; Allow you to hard code a default git branch for Ampache
 ; If you set this value the inbuilt updater will use this branch for updates.
-; POSSIBLE VALUES: master develop
+; POSSIBLE VALUES: master develop patch6 release6
 ; DEFAULT: none
 ;github_force_branch = "develop"
 
@@ -25,7 +32,7 @@ config_version = 62
 
 ; We sometimes need to talk and will show a warning to admin users
 ; Enable this setting if you don't want to see warnings (When we enable them)
-; DEFAULT: false
+; DEFAULT: "false"
 ;hide_ampache_messages = "true"
 
 ;#########################################################
@@ -63,6 +70,14 @@ web_path = ""
 ; DEFAULT: none
 ;local_web_path = "http://localhost/ampache"
 
+; The Ampache base URL is determined from web requests.
+; When using CLI actions you don't send a web request meaning
+; it can't be determined. This setting allows you to set a
+; fallback when the base url can't be determined. Do not put a
+; trailing slash or this will not work.
+; DEFAULT: none
+;fallback_url = "https://example.ampache.dev"
+
 ;#########################################################
 ; Database                                               #
 ;#########################################################
@@ -74,7 +89,7 @@ database_hostname = "/run/mysqld/mysqld.sock"
 
 ; Port to use when connecting to your database
 ; DEFAULT: none
-;database_port = 3306
+database_port = "3306"
 
 ; Name of your Ampache database
 ; DEFAULT: none
@@ -134,17 +149,19 @@ stream_length = "7200"
 remember_length = "604800"
 
 ; Name of the Session/Cookie that will sent to the browser
-; default should be fine
-; DEFAULT: ampache
+; If you are using session_cookiesecure add the prefix __Secure-
+; to restrict cookie access to HTTPS only (e.g. "__Secure-ampache")
+; (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#cookie-namecookie-value)
+; DEFAULT: "ampache"
 session_name = "ampachetest"
 
-; Lifetime of the Cookie, 0 == Forever (until browser close) , otherwise in terms of seconds
+; Lifetime of the Cookie, 0 == Forever (until browser close), otherwise in terms of seconds
 ; If you want cookies to last past a browser close set this to a value in seconds.
 ; DEFAULT: 0
 session_cookielife = "0"
 
-; Is the cookie a "secure" cookie? This should only be set to 1 (true) if you are
-; running a secure site (HTTPS).
+; Create cookies with the "secure" flag.
+; Set to 1 (true) if you are running a secure site (HTTPS).
 ; DEFAULT: 0
 session_cookiesecure = "0"
 
@@ -210,6 +227,12 @@ require_localnet_session = "true"
 ; DEFAULT: "false"
 ;disable_xframe_sameorigin = "true"
 
+; Add a STREAMTOKEN to the account when a new user is created
+; Streamtoken's allow a user to play without having a valid session (links do not expire)
+; https://github.com/ampache/ampache/wiki/ampache6-details#allow-permalink-user-streams
+; DEFAULT: "false"
+;user_create_streamtoken = "true"
+
 ;#########################################################
 ; Metadata                                               #
 ;#########################################################
@@ -227,15 +250,6 @@ getid3_tag_order = "vorbiscomment,id3v2,quicktime,matroska,ape,asf,avi,mpeg,riff
 ; DEFAULT: "false"
 ;getid3_detect_id3v2_encoding = "true"
 
-; This determines if we write the changes to files (as id3 tags) when modifying metadata, or only keep them in Ampache (the default).
-; DEFAULT: "false"
-;write_id3 = "true"
-
-; This determines if we write the changes to files (as id3 tags) when modifying album art, or only keep them in Ampache (the default)
-; as id3 metadata when updated.
-; DEFAULT: "false"
-;write_id3_art = "true"
-
 ; This determines the order in which metadata sources are used (and in the
 ; case of plugins, checked)
 ; POSSIBLE VALUES (builtins): filename and getID3
@@ -247,7 +261,7 @@ metadata_order = "getID3,MusicBrainz,TheAudioDb,filename"
 ; case of plugins, checked) for video files
 ; POSSIBLE VALUES (builtins): filename and getID3
 ; POSSIBLE VALUES (plugins): Tvdb,Tmdb,Omdb, plus any others you've installed.
-; DEFAULT: filename getID3
+; DEFAULT: "filename,getID3"
 metadata_order_video = "filename,getID3"
 
 ; This determines if extended metadata grabbed from external services should be deferred.
@@ -260,8 +274,8 @@ deferred_ext_metadata = "true"
 ; Some taggers use delimiters other than \0 for fields
 ; This list specifies possible delimiters additional to \0
 ; This setting takes a regex pattern. TODO: explain that this is not just for genres until we can replace this safely
-; DEFAULT: // / \ | , ;
-additional_genre_delimiters = "[/]{2}|[/\\|,;]"
+; DEFAULT: "[/]{2}|[/\\|,;]" (Split on "//", "_", "/", "\", "|", "," and ";")
+additional_genre_delimiters = "[/]{2}|[/\|,;]"
 
 ; Enable importing custom metadata from files.
 ; This will need a bit of time during the import. So you may want to disable this
@@ -323,7 +337,7 @@ catalog_prefix_pattern = "The|An|A|Die|Das|Ein|Eine|Les|Le|La"
 ; This defines if catalog can be filtered per user.
 ; The filters are set in the catalog management pages.
 ; WARNING: this increase sensibly sql requests and slow down Ampache a lot
-; DEFAULT: false
+; DEFAULT: "false"
 ;catalog_filter = "true"
 
 ; Delete from disk
@@ -363,6 +377,10 @@ catalog_prefix_pattern = "The|An|A|Die|Das|Ein|Eine|Les|Le|La"
 ; DEFAULT: 42 days
 ;user_ip_cardinality = "42"
 
+; Display this message on the Login page
+; DEFAULT: ""
+;login_message = "For the Love of Music"
+
 ; Allow Zip Download
 ; This setting allows/disallows using zlib to zip up an entire
 ; playlist/album for download. Even if this is turned on you will
@@ -375,14 +393,14 @@ catalog_prefix_pattern = "The|An|A|Die|Das|Ein|Eine|Les|Le|La"
 ; This setting allows/disallows zip download of specific object types
 ; If empty, all supported object types can be zipped.
 ; Otherwise, only the given object list can be zipped.
-; POSSIBLE VALUES: artist, album, playlist, search, tmp_playlist
+; POSSIBLE VALUES: artist, album, album_disk, playlist, search, tmp_playlist
 ; DEFAULT: none
-;allow_zip_types = "album"
+;allow_zip_types = "album, album_disk"
 
 ; Art Zip Add
-; This settings allows/disallows to include Album Art to the Zip 
-; If 'album_art_preferred_filename' exists this is included 
-; DEFAULT: false
+; This settings allows/disallows to include Album Art to the Zip
+; If 'album_art_preferred_filename' exists this is included
+; DEFAULT: "false"
 ;art_zip_add = "true"
 
 ; File Zip Comment
@@ -390,13 +408,6 @@ catalog_prefix_pattern = "The|An|A|Die|Das|Ein|Eine|Les|Le|La"
 ; to your zip files, this only applies if you've got allow_zip_downloads
 ; DEFAULT: Ampache - Zip Batch Download
 ;file_zip_comment = "Ampache - Zip Batch Download"
-
-; Load the debug webplayer
-; This will load the *.js player instead of the *.min.js player
-; The unminified player has a lot of console.log() statements in the code.
-; You can make changes and then check how the player is functioning.
-; DEFAULT: "false"
-;webplayer_debug = "true"
 
 ; Waveform
 ; This settings tells Ampache to attempt to generate a waveform
@@ -422,8 +433,8 @@ waveform = "true"
 
 ; Temporary Directory Path
 ; If Waveform is enabled this must be set to tell
-; Ampache which directory to save the temporary file to. Do not put a
-; trailing slash or this will not work.
+; Ampache which directory to save the temporary file to.
+; Do not put a trailing slash or this will not work.
 ; DEFAULT: "false"
 ;tmp_dir_path = "/tmp"
 
@@ -472,7 +483,7 @@ default_auth_level = "guest"
 
 ; 5 Star Ratings
 ; This allows ratings for almost any object in Ampache
-: It also allows users to flag objects as a favorite
+; It also allows users to flag objects as a favorite
 ; POSSIBLE VALUES: false true
 ; DEFAULT: "true"
 ratings = "true"
@@ -547,7 +558,7 @@ licensing = "true"
 ; i.e. "folder.jpg" Ampache currently only supports jpg/gif and png
 ; Especially useful if you have a front and a back image in a folder
 ; comment out if Ampache should search for any jpg, gif or png
-; DEFAULT: folder.jpg
+; DEFAULT: "folder.jpg"
 ;album_art_preferred_filename = "folder.jpg"
 
 ; Artist Art Preferred Filename
@@ -555,7 +566,7 @@ licensing = "true"
 ; same folder as your files or in the parent folder
 ; e.g. /mnt/music/Artist/Album/artist.jpg
 ;      /mnt/music/Artist/artist.jpg
-; DEFAULT: folder.jpg
+; DEFAULT: "folder.jpg"
 artist_art_preferred_filename = "artist.jpg"
 
 ; Artist Art Dump Folder
@@ -568,14 +579,16 @@ artist_art_folder = "/mnt/art"
 
 ; Album Art Store on Disk
 ; This defines if arts should be stored on disk instead of database.
+; You must also set a local_metadata_dir below. This folder should be
+; a local folder that is not accessible from a browser.
 ; DEFAULT: "false"
 ;album_art_store_disk = "true"
 
 ; Local Metadata Directory
-; This define a local metadata directory with write access where to store
-; heavy data if enabled (album arts, ...)
+; This define a local metadata directory OUTSIDE the web path with write access.
+; This is used to store heavy data if enabled (album art, waveforms, etc)
 ; DEFAULT: none
-;local_metadata_dir = "/metadata"
+;local_metadata_dir = "/var/www/metadata"
 
 ; Maximal upload size
 ; Specify the maximal allowed upload size for images, in bytes.
@@ -584,8 +597,8 @@ artist_art_folder = "/mnt/art"
 
 ; Album Art Minimum Width
 ; Specify the minimum width for arts (in pixel).
-; DEFAULT: none
-;album_art_min_width = 100
+; DEFAULT: 30
+album_art_min_width = "30"
 
 ; Album Art Maximum Width
 ; Specify the maximum width for arts (in pixel).
@@ -594,8 +607,8 @@ artist_art_folder = "/mnt/art"
 
 ; Album Art Minimum Height
 ; Specify the minimum height for arts (in pixel).
-; DEFAULT: none
-;album_art_min_height = 100
+; DEFAULT: 30
+album_art_min_height = "30"
 
 ; Album Art Maximum Height
 ; Specify the maximum height for arts (in pixel).
@@ -623,8 +636,10 @@ playlist_art = "true"
 ;  https://github.com/ampache/ampache/issues/1515
 ;  http://www.pchart.net/license
 ; REFERENCE: https://github.com/ampache/ampache/wiki/chart-faq
-; You can enable c-chart with the following command
-;  composer require szymach/c-pchart "2.*"
+; You can enable c-chart with the following command:
+;  composer install --dev
+; Or add it as a non-dev requirement with:
+;  composer require szymach/c-pchart "3.*"
 ; DEFAULT: "false"
 ;statistical_graphs = "true"
 
@@ -634,9 +649,9 @@ playlist_art = "true"
 ; methods simply leave it out. DB should be left as the first
 ; method unless you want it to overwrite what's already in the
 ; database
-; POSSIBLE VALUES (builtins): db tags folder lastfm musicbrainz google
+; POSSIBLE VALUES (builtins): db tags folder spotify musicbrainz google
 ; POSSIBLE VALUES (plugins): Amazon,TheAudioDb,Tmdb,Omdb,Flickr
-; DEFAULT: db,tags,folder,spotify,musicbrainz,lastfm,google
+; DEFAULT: db,tags,folder,spotify,musicbrainz
 art_order = "db,spotify,TheAudioDb,musicbrainz,lastfm,tags,folder"
 
 ; Gather song art
@@ -653,7 +668,7 @@ art_order = "db,spotify,TheAudioDb,musicbrainz,lastfm,tags,folder"
 ; Show song art instead of album art in web UI and Subsonic API.
 ; This will only work when gather_song_art is set to true AND when
 ; there is song art in the database.
-; DEFAULT: false
+; DEFAULT: "false"
 ;show_song_art = "true"
 
 ; Spotify Album art search filter
@@ -739,12 +754,6 @@ label = "true"
 ; DEFAULT: "false"
 ;broadcast = "true"
 
-; Channels
-; Set this to true to enable channels and the
-; possibility for users to create channels from playlists
-; DEFAULT: "false"
-channel = "false"
-
 ; Live Streams
 ; Set this to true to enable live streams (radio) and the
 ; possibility for users to add new live streams.
@@ -795,7 +804,7 @@ refresh_limit = "60"
 ; a stream or status page.
 ; If this value is not set, no CSS will be used. Custom CSS can
 ; still be applied in the other application, like OBS.
-; DEFAULT: Not enabled
+; DEFAULT: "templates/now-playing.css"
 ;now_playing_css_file = "templates/now-playing.css"
 
 ; Footer Statistics
@@ -852,13 +861,26 @@ log_path = "/var/log/ampache"
 ; DEFAULT: %name.%Y%m%d.log
 log_filename = "ampache-test.log"
 
+; API Debug Handler
+; If this is enabled Ampache will not catch exceptions during API calls.
+; Used for development and not recommended for regular use.
+; DEFAULT: "false"
+;api_debug_handler = "true"
+
+; Load the debug webplayer
+; This will load the *.js player instead of the *.min.js player
+; The unminified player has a lot of console.log() statements in the code.
+; You can make changes and then check how the player is functioning.
+; DEFAULT: "false"
+;webplayer_debug = "true"
+
 ;#########################################################
 ; Encoding Settings                                      #
 ;#########################################################
 
 ; Charset of generated HTML pages
 ; Default of UTF-8 should work for most people
-; DEFAULT: UTF-8
+; DEFAULT: "UTF-8"
 site_charset = "UTF-8"
 
 ; Locale Charset
@@ -1038,14 +1060,14 @@ cookie_disclaimer = "false"
 ; If a user wants to register.
 ; Username and email fields are forced.
 ; POSSIBLE VALUES: fullname,website,state,city
-; DEFAULT: fullname,website
+; DEFAULT: "fullname,website"
 registration_display_fields = "fullname,website"
 
 ; The fields that will be mandatory
 ; This controls which fields are mandatory for registration.
 ; Username and email fields are forced mandatory.
 ; POSSIBLE VALUES: fullname,website,state,city
-; DEFAULT: fullname
+; DEFAULT: "fullname"
 registration_mandatory_fields = "fullname"
 
 ;#########################################################
@@ -1129,7 +1151,7 @@ encode_video_target = "webm"
 ; to stream lossless encoded files in lossy formats.
 ; encode_target_TYPE = TYPE
 ; DEFAULT: none
-;encode_target_flac = opus
+;encode_target_flac = "opus"
 
 ; Override the default TYPE transcoding behavior on a per-player basis, for example,
 ; to stream lossless using the api and lossy using the web interface.
@@ -1144,8 +1166,8 @@ encode_video_target = "webm"
 ; encode_player_PLAYER_target = TYPE
 ; Valid PLAYER is: webplayer, api
 ; DEFAULT: none
-;encode_player_webplayer_target = mp3
-;encode_player_api_target = mp3
+;encode_player_webplayer_target = "mp3"
+;encode_player_api_target = "mp3"
 
 ; Allow clients to override transcode settings (output type, bitrate, codec ...)
 ; DEFAULT: "true"
@@ -1226,6 +1248,9 @@ send_full_stream = "webplayer"
 ;cache_path = "/tmp"
 
 ; Default audio output format
+; This is what you want your cached format to be.
+; This should match your 'encode_target' in Transcode Settings
+; POSSIBLE VALUES: mp3 opus ogg
 ; DEFAULT: none
 ;cache_target = "mp3"
 
@@ -1276,7 +1301,7 @@ send_full_stream = "webplayer"
 ; Enable or disable email server features
 ; otherwise, you can reset your password
 ; and never receive an email with the new one
-; Default: false
+; Default: "false"
 ;mail_enable = "true"
 
 ; Method used to send mail
@@ -1327,7 +1352,7 @@ send_full_stream = "webplayer"
 ; Secure SMTP
 ; POSSIBLE VALUES: ssl tls
 ; DEFAULT: none
-;mail_secure_smtp = tls
+;mail_secure_smtp = "tls"
 
 ; Enable SMTP authentication
 ; DEFAULT: "false"
