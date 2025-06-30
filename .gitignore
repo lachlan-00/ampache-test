@@ -17,3 +17,7 @@ video/*
 ampache/
 docker/media
 nohup.out
+docker/log/supervisor/supervisord.log
+docker/log/apache2/access.log
+docker/log/apache2/error.log
+docker/log/apache2/other_vhosts_access.log
