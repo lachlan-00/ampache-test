@@ -1,0 +1,75 @@
+#!/bin/bash
+
+mysqld_safe &
+sleep 5
+
+RET=1
+while [ $RET -ne 0 ]; do
+    echo "=> Waiting for confirmation of MySQL service startup"
+    sleep 5
+    mysql -uroot -e "status" > /dev/null 2>&1
+    RET=$?
+done
+
+# fall back for DB user variables if not set
+if [ -n "$DB_HOST" ]; then
+    if [ -n "$MYSQL_USER" ] && [ ! -n "$DB_USER" ]; then
+        DB_USER=$MYSQL_USER
+    fi
+    if [ -n "$MYSQL_PASS" ] && [ ! -n "$DB_PASSWORD" ]; then
+        DB_PASSWORD=$MYSQL_PASS
+    fi
+fi
+
+# INSTALL
+if [ -n "$DB_NAME" ] && [ -n "$DB_USER" ] && [ -n "$DB_HOST" ] && { [ -n "$DB_PASSWORD" ] || ( [ "$DB_USER" = "root" ] && { [ "$DB_HOST" = "localhost" ] || [ "$DB_HOST" = "127.0.0.1" ]; } ); }; then
+    # php /var/www/html/bin/installer install
+    INSTALL_COMMAND="php /var/www/bin/installer install --dbname $DB_NAME --dbhost $DB_HOST --dbuser $DB_USER"
+    if [ "$DB_PASSWORD" = "**Random**" ]; then
+            DB_PASSWORD=$(pwgen -s 14 1)
+        fi
+    if [ -n "$DB_PASSWORD" ]; then
+        INSTALL_COMMAND="$INSTALL_COMMAND --dbpassword $DB_PASSWORD"
+    fi
+    # Add --force flag only when FORCE_INSTALL=1
+    if [ "${FORCE_INSTALL:-0}" = "1" ]; then
+        INSTALL_COMMAND="$INSTALL_COMMAND --force"
+    fi
+    if [ -n "$DB_PORT" ]; then
+        INSTALL_COMMAND="$INSTALL_COMMAND --dbport $DB_PORT"
+    fi
+    # fall back for Ampache variables if not set
+    if [ -n "$DB_USER" ] && [ ! -n "$AMPACHE_DB_USER" ]; then
+        AMPACHE_DB_USER=$DB_USER
+    fi
+    if [ -n "$DB_PASSWORD" ] && [ ! -n "$AMPACHE_DB_PASSWORD" ]; then
+        AMPACHE_DB_PASSWORD=$DB_PASSWORD
+    fi
+
+    if [ -n "$AMPACHE_DB_USER" ] && [ -n "$AMPACHE_DB_PASSWORD" ]; then
+        if [ "$AMPACHE_DB_PASSWORD" = "**Random**" ]; then
+            AMPACHE_DB_PASSWORD=$(pwgen -s 14 1)
+        fi
+        INSTALL_COMMAND="$INSTALL_COMMAND --ampachedbuser $AMPACHE_DB_USER --ampachedbpassword $AMPACHE_DB_PASSWORD"
+    else
+        if [ ! -n "$DB_PASSWORD" ]; then
+            echo "=> ERROR: Missing password for Ampache database user"
+            exit 1
+        fi
+        INSTALL_COMMAND="$INSTALL_COMMAND --ampachedbuser $DB_USER --ampachedbpassword $DB_PASSWORD"
+    fi
+
+    echo "=> Installing Ampache database"
+    $INSTALL_COMMAND
+fi
+if [ -n "$AMPACHE_ADMIN_USER" ] && [ -n "$AMPACHE_ADMIN_EMAIL" ] ; then
+    if [ "$AMPACHE_ADMIN_PASSWORD" = "**Random**" ] || [ ! -n "$AMPACHE_ADMIN_PASSWORD" ]; then
+        AMPACHE_ADMIN_PASSWORD=$(pwgen -s 14 1)
+    fi
+
+    echo "=> Creating Ampache admin user"
+    php /var/www/bin/cli admin:addUser "$AMPACHE_ADMIN_USER" -p "$AMPACHE_ADMIN_PASSWORD" -e "$AMPACHE_ADMIN_EMAIL" -l 100
+fi
+
+# shutdown MySQL to allow supervisor to take over
+mysqladmin -uroot shutdown
