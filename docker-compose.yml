@@ -12,6 +12,7 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - ./ampache:/var/www/html
+      - ./docker/art:/mnt/art
       - ./docker/log:/var/log/ampache
       - ./docker/media:/media
       - ./docker/data/sql:/tmp/sql
