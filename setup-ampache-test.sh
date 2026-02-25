@@ -1,90 +1,90 @@
 #!/bin/sh
 
-AMPACHEDIR=$PWD
+AMPACHETESTDIR=$PWD
 COMPOSERPATH="/usr/local/bin/composer"
 
 if [ ! -f $COMPOSERPATH ]; then
-  COMPOSERPATH="$AMPACHEDIR/docker/composer"
+  COMPOSERPATH="$AMPACHETESTDIR/docker/composer"
   wget -q -O $COMPOSERPATH https://getcomposer.org/download/latest-stable/composer.phar
   chmod +x $COMPOSERPATH
 fi
 
-if [ ! -d $AMPACHEDIR/ampache ]; then
-  git clone -b patch6 https://github.com/ampache/ampache.git ampache
+if [ ! -d $AMPACHETESTDIR/ampache ]; then
+  git clone -b patch7 https://github.com/ampache/ampache.git ampache
 fi
-if [ ! -f $AMPACHEDIR/ampache/index.php ]; then
-  rm -rf $AMPACHEDIR/ampache
-  git clone -b patch6 https://github.com/ampache/ampache.git ampache
+if [ ! -f $AMPACHETESTDIR/ampache/index.php ]; then
+  rm -rf $AMPACHETESTDIR/ampache
+  git clone -b patch7 https://github.com/ampache/ampache.git ampache
 fi
-cd $AMPACHEDIR/ampache && git reset --hard origin/patch6 && git pull
-rm -rf ./composer.lock vendor/* public/lib/components/* && php8.2 $COMPOSERPATH install
-php8.2 $COMPOSERPATH install
+cd $AMPACHETESTDIR/ampache && git reset --hard origin/patch6 && git pull
+rm -rf ./composer.lock vendor/* public/lib/components/* && php $COMPOSERPATH install
+php $COMPOSERPATH install
 find . -xtype l -exec rm {} \;
 wget -P ./public/lib/components/jQuery-contextMenu/dist/ https://raw.githubusercontent.com/swisnl/jQuery-contextMenu/a7a1b9f3b9cd789d6eb733ee5e7cbc6c91b3f0f8/dist/jquery.contextMenu.min.js.map
 wget -P ./public/lib/components/jQuery-contextMenu/dist/ https://raw.githubusercontent.com/swisnl/jQuery-contextMenu/a7a1b9f3b9cd789d6eb733ee5e7cbc6c91b3f0f8/dist/jquery.contextMenu.min.css.map
 find . -name "*.map.1" -exec rm {} \;
 
 # create the htaccess files
-if [ ! -f $AMPACHEDIR/ampache/public/play/.htaccess ]; then
-  cp $AMPACHEDIR/ampache/public/play/.htaccess.dist $AMPACHEDIR/ampache/public/play/.htaccess
+if [ ! -f $AMPACHETESTDIR/ampache/public/play/.htaccess ]; then
+  cp $AMPACHETESTDIR/ampache/public/play/.htaccess.dist $AMPACHETESTDIR/ampache/public/play/.htaccess
 fi
-if [ ! -f $AMPACHEDIR/ampache/public/rest/.htaccess ]; then
-  cp $AMPACHEDIR/ampache/public/rest/.htaccess.dist $AMPACHEDIR/ampache/public/rest/.htaccess
+if [ ! -f $AMPACHETESTDIR/ampache/public/rest/.htaccess ]; then
+  cp $AMPACHETESTDIR/ampache/public/rest/.htaccess.dist $AMPACHETESTDIR/ampache/public/rest/.htaccess
 fi
 
 # create the docker volume folders
-if [ ! -d $AMPACHEDIR/docker/log ]; then
-  mkdir $AMPACHEDIR/docker/log
+if [ ! -d $AMPACHETESTDIR/docker/log ]; then
+  mkdir $AMPACHETESTDIR/docker/log
 fi
-if [ ! -d $AMPACHEDIR/docker/media ]; then
-  mkdir $AMPACHEDIR/docker/media
+if [ ! -d $AMPACHETESTDIR/docker/media ]; then
+  mkdir $AMPACHETESTDIR/docker/media
 fi
-if [ ! -d $AMPACHEDIR/docker/art ]; then
-  mkdir $AMPACHEDIR/docker/art
+if [ ! -d $AMPACHETESTDIR/docker/art ]; then
+  mkdir $AMPACHETESTDIR/docker/art
 fi
-if [ ! -d $AMPACHEDIR/docker/music ]; then
-  mkdir $AMPACHEDIR/docker/music
+if [ ! -d $AMPACHETESTDIR/docker/music ]; then
+  mkdir $AMPACHETESTDIR/docker/music
 fi
-if [ ! -d $AMPACHEDIR/docker/podcast ]; then
-  mkdir $AMPACHEDIR/docker/podcast
+if [ ! -d $AMPACHETESTDIR/docker/podcast ]; then
+  mkdir $AMPACHETESTDIR/docker/podcast
 fi
-if [ ! -d $AMPACHEDIR/docker/upload ]; then
-  mkdir $AMPACHEDIR/docker/upload
+if [ ! -d $AMPACHETESTDIR/docker/upload ]; then
+  mkdir $AMPACHETESTDIR/docker/upload
 fi
-if [ ! -d $AMPACHEDIR/docker/video ]; then
-  mkdir $AMPACHEDIR/docker/video
+if [ ! -d $AMPACHETESTDIR/docker/video ]; then
+  mkdir $AMPACHETESTDIR/docker/video
 fi
 
 #copy the config
-cp -f $AMPACHEDIR/ampache.cfg.php $AMPACHEDIR/ampache/config/ampache.cfg.php
+cp -f $AMPACHETESTDIR/ampache.cfg.php $AMPACHETESTDIR/ampache/config/ampache.cfg.php
 
 # reset perms
-chown $UID:33 $AMPACHEDIR/docker/log
-chmod 775 $AMPACHEDIR/docker/log
+chown $UID:33 $AMPACHETESTDIR/docker/log
+chmod 775 $AMPACHETESTDIR/docker/log
 
-chown $UID:33 $AMPACHEDIR/docker/media
-chmod 775 $AMPACHEDIR/docker/media
+chown $UID:33 $AMPACHETESTDIR/docker/media
+chmod 775 $AMPACHETESTDIR/docker/media
 
-chown $UID:33 $AMPACHEDIR/ampache/composer.json 
-chmod 775 $AMPACHEDIR/ampache/composer.json
-chown -R $UID:33 $AMPACHEDIR/ampache/config
-chmod -R 775 $AMPACHEDIR/ampache/config
-chown -R $UID:33 $AMPACHEDIR/ampache/vendor/
-chmod -R 775 $AMPACHEDIR/ampache/vendor/
-chown -R $UID:33 $AMPACHEDIR/ampache/public/
-chmod -R 775 $AMPACHEDIR/ampache/public/
+chown $UID:33 $AMPACHETESTDIR/ampache/composer.json 
+chmod 775 $AMPACHETESTDIR/ampache/composer.json
+chown -R $UID:33 $AMPACHETESTDIR/ampache/config
+chmod -R 775 $AMPACHETESTDIR/ampache/config
+chown -R $UID:33 $AMPACHETESTDIR/ampache/vendor/
+chmod -R 775 $AMPACHETESTDIR/ampache/vendor/
+chown -R $UID:33 $AMPACHETESTDIR/ampache/public/
+chmod -R 775 $AMPACHETESTDIR/ampache/public/
 
 # remove the lock and install composer packages
-if [ -f $AMPACHEDIR/ampache/composer.lock ]; then
-  rm $AMPACHEDIR/ampache/composer.lock
+if [ -f $AMPACHETESTDIR/ampache/composer.lock ]; then
+  rm $AMPACHETESTDIR/ampache/composer.lock
 fi
-cd $AMPACHEDIR/ampache && php8.2 $COMPOSERPATH install && cd $AMPACHEDIR
+cd $AMPACHETESTDIR/ampache && php $COMPOSERPATH install && cd $AMPACHETESTDIR
 
 
-chown $UID:33 $AMPACHEDIR/docker/log
-chmod 775 $AMPACHEDIR/docker/log
-chown $UID:33 $AMPACHEDIR/docker/media
-chmod 775 $AMPACHEDIR/docker/media
+chown $UID:33 $AMPACHETESTDIR/docker/log
+chmod 775 $AMPACHETESTDIR/docker/log
+chown $UID:33 $AMPACHETESTDIR/docker/media
+chmod 775 $AMPACHETESTDIR/docker/media
 
-chown $UID:33 $AMPACHEDIR/ampache
-chmod 775 $AMPACHEDIR/ampache
+chown $UID:33 $AMPACHETESTDIR/ampache
+chmod 775 $AMPACHETESTDIR/ampache
