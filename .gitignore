@@ -22,3 +22,4 @@ docker/log/apache2/access.log
 docker/log/apache2/error.log
 docker/log/apache2/other_vhosts_access.log
 docker/composer
+package-lock.json
