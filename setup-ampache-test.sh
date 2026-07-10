@@ -2,6 +2,7 @@
 
 AMPACHETESTDIR=$PWD
 COMPOSERPATH="/usr/local/bin/composer"
+DEVELOPBRANCH="develop8"
 
 if [ ! -f $COMPOSERPATH ]; then
   COMPOSERPATH="$AMPACHETESTDIR/docker/composer"
@@ -10,15 +11,19 @@ if [ ! -f $COMPOSERPATH ]; then
 fi
 
 if [ ! -d $AMPACHETESTDIR/ampache ]; then
-  git clone -b patch7 https://github.com/ampache/ampache.git ampache
+  git clone -b $DEVELOPBRANCH https://github.com/ampache/ampache.git ampache
 fi
 if [ ! -f $AMPACHETESTDIR/ampache/index.php ]; then
   rm -rf $AMPACHETESTDIR/ampache
-  git clone -b patch7 https://github.com/ampache/ampache.git ampache
+  git clone -b $DEVELOPBRANCH https://github.com/ampache/ampache.git ampache
 fi
-cd $AMPACHETESTDIR/ampache && git reset --hard origin/patch6 && git pull
-rm -rf ./composer.lock vendor/* public/lib/components/* && php $COMPOSERPATH install
+cd $AMPACHETESTDIR/ampache && git reset --hard origin/$DEVELOPBRANCH && git pull
+rm -rf ./composer.lock vendor/* public/lib/components/*
+
 php $COMPOSERPATH install
+npm install
+npm run build
+
 find . -xtype l -exec rm {} \;
 wget -P ./public/lib/components/jQuery-contextMenu/dist/ https://raw.githubusercontent.com/swisnl/jQuery-contextMenu/a7a1b9f3b9cd789d6eb733ee5e7cbc6c91b3f0f8/dist/jquery.contextMenu.min.js.map
 wget -P ./public/lib/components/jQuery-contextMenu/dist/ https://raw.githubusercontent.com/swisnl/jQuery-contextMenu/a7a1b9f3b9cd789d6eb733ee5e7cbc6c91b3f0f8/dist/jquery.contextMenu.min.css.map

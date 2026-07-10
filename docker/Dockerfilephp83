@@ -1,16 +1,16 @@
-FROM debian:stable
+FROM debian:stable-slim
 LABEL maintainer="lachlan-00"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV MYSQL_USER=admin
 ENV MYSQL_PASS=**Random**
 ENV DISABLE_INOTIFYWAIT_CLEAN=0
-ARG VERSION=7.8.0
+ARG VERSION=8.0.0
 ARG PHPVERSION=8.3
 
 RUN     sh -c 'echo "Types: deb\n# http://snapshot.debian.org/archive/debian/20230612T000000Z\nURIs: http://deb.debian.org/debian\nSuites: stable stable-updates\nComponents: main contrib non-free\nSigned-By: /usr/share/keyrings/debian-archive-keyring.gpg\n\nTypes: deb\n# http://snapshot.debian.org/archive/debian-security/20230612T000000Z\nURIs: http://deb.debian.org/debian-security\nSuites: stable-security\nComponents: main\nSigned-By: /usr/share/keyrings/debian-archive-keyring.gpg\n" > /etc/apt/sources.list.d/debian.sources' \
     &&  apt-get -q -q update \
-    &&  apt-get -q -q -y install --no-install-recommends wget lsb-release ca-certificates libdvd-pkg extrepo \
+    &&  apt-get -q -q -y install --no-install-recommends wget lsb-release ca-certificates extrepo \
     &&  extrepo enable sury \
     &&  apt-get update \
     &&  apt-get -q -q -y install --no-install-recommends \
@@ -41,64 +41,42 @@ RUN     sh -c 'echo "Types: deb\n# http://snapshot.debian.org/archive/debian/202
           php${PHPVERSION}-mysql \
           php${PHPVERSION}-xml \
           php${PHPVERSION}-zip \
+          php-pear \
           pwgen \
           supervisor \
           vorbis-tools \
           zip \
           unzip \
           git \
+    &&  update-alternatives --set php /usr/bin/php${PHPVERSION} \
+    &&  phpenmod -v ${PHPVERSION} xml \
+    &&  rm -rf /var/www/html/* /etc/apache2/sites-enabled/* /var/lib/apt/lists/* \
     &&  rm -rf /var/www /etc/apache2/sites-enabled/* /var/lib/apt/lists/* \
     &&  mkdir -p /var/log/ampache \
     &&  chown -R www-data:www-data /var/log/ampache \
     &&  ln -s /etc/apache2/sites-available/001-ampache.conf /etc/apache2/sites-enabled/ \
     &&  a2enmod rewrite \
-    &&  wget -q -O /tmp/develop.zip https://github.com/ampache/ampache/archive/refs/heads/develop.zip \
-    &&  unzip /tmp/develop.zip -d /tmp/ \
-    &&  mv /tmp/ampache-develop/ /var/www/ \
-    &&  cp -f /var/www/public/rest/.htaccess.dist /var/www/public/rest/.htaccess \
-    &&  cp -f /var/www/public/play/.htaccess.dist /var/www/public/play/.htaccess \
-    &&  cd /var/www \
-    &&  wget -q -O ./composer https://getcomposer.org/download/latest-stable/composer.phar \
-    &&  chmod +x ./composer \
-    &&  ./composer install --prefer-dist --no-interaction \
-    &&  ./composer clear-cache \
-    &&  npm install \
-    &&  npm run build \
-    &&  npm cache clean --force \
-    &&  rm ./composer \
-    &&  cp -f /var/www/config/ampache.cfg.php.dist /var/tmp/ \
-    &&  rm -f /var/www/.php*cs* /var/www/.sc /var/www/.scrutinizer.yml \
-          /var/www/.tgitconfig /var/www/.travis.yml /var/www/*.md \
-    &&  find /var/www -type d -name ".git*" -print0 | xargs -0 rm -rf {} \
-    &&  chown -R www-data:www-data /var/www \
-    &&  chmod -R 775 /var/www \
-    &&  rm -rf /var/cache/* /tmp/* /var/tmp/develop.zip /root/.cache /var/www/docs /var/www/.tx /var/log/dpkg.log \
-    &&  echo '30 * * * *   /usr/local/bin/ampache_cron.sh' | crontab -u www-data - \
+    &&  rm -rf /var/cache/* /tmp/* /var/tmp/* /root/.cache /var/www/html/docs /var/www/html/.tx \
     &&  sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen \
     &&  locale-gen \
     &&  apt-get -qq purge \
           build-essential \
-          debhelper-compat \
           extrepo \
-          libdvd-pkg \
           lsb-release \
-          git \
-          npm \
           unzip \
           wget \
     &&  apt-get -qq autoremove
 
-VOLUME ["/var/www/config"]
+VOLUME ["/var/log/ampache", "/var/www/html"]
 EXPOSE 80
 
-COPY docker/data/bin/run.sh docker/data/bin/inotifywait.sh docker/data/bin/cron.sh docker/data/bin/apache2.sh docker/data/bin/install.sh docker/data/bin/ampache_cron.sh docker/data/bin/docker-entrypoint.sh /usr/local/bin/
+COPY docker/data/bin/run.sh docker/data/bin/mysql.sh docker/data/bin/inotifywait.sh docker/data/bin/cron.sh docker/data/bin/apache2.sh docker/data/bin/install.sh docker/data/bin/ampache_cron.sh docker/data/bin/docker-entrypoint.sh /usr/local/bin/
 COPY docker/data/sites-enabled/001-ampache.conf /etc/apache2/sites-available/
 COPY docker/data/apache2/php.ini /etc/php/${PHPVERSION}/apache2/
 COPY docker/data/logrotate.d/* /etc/logrotate.d/
 COPY docker/data/conf.d/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-RUN  chown -R www-data:www-data /var/tmp/ampache.cfg.php.dist /var/www/config \
-    &&  chmod +x /usr/local/bin/*.sh
+RUN  chmod +x /usr/local/bin/*.sh
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["run.sh"]

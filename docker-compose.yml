@@ -4,7 +4,7 @@ services:
   ampachetest:
     build:
       context: .
-      dockerfile: docker/Dockerfilephp82
+      dockerfile: docker/Dockerfilephp85
     restart: on-failure
     ports:
       - "8989:80"
@@ -13,6 +13,6 @@ services:
     volumes:
       - ./ampache:/var/www/html
       - ./docker/art:/mnt/art
-      - ./docker/log:/var/log/ampache
+      - ./docker/log:/var/log
       - ./docker/media:/media
       - ./docker/data/sql:/tmp/sql
