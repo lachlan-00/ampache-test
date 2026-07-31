@@ -2,7 +2,7 @@
 
 AMPACHETESTDIR=$PWD
 COMPOSERPATH="/usr/local/bin/composer"
-DEVELOPBRANCH="develop8"
+DEVELOPBRANCH="develop"
 
 if [ ! -f $COMPOSERPATH ]; then
   COMPOSERPATH="$AMPACHETESTDIR/docker/composer"
@@ -17,7 +17,7 @@ if [ ! -f $AMPACHETESTDIR/ampache/index.php ]; then
   rm -rf $AMPACHETESTDIR/ampache
   git clone -b $DEVELOPBRANCH https://github.com/ampache/ampache.git ampache
 fi
-cd $AMPACHETESTDIR/ampache && git reset --hard origin/$DEVELOPBRANCH && git pull
+cd $AMPACHETESTDIR/ampache && git fetch origin $DEVELOPBRANCH && git checkout -f $DEVELOPBRANCH && git reset --hard origin/$DEVELOPBRANCH && git pull
 rm -rf ./composer.lock vendor/* public/lib/components/*
 
 php $COMPOSERPATH install
